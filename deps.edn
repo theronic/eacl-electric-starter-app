@@ -2,11 +2,22 @@
            org.clojure/clojure            {:mvn/version "1.12.0"}
            org.clojure/clojurescript      {:mvn/version "1.11.121"}
            ring/ring                      {:mvn/version "1.11.0"} ; to serve the app
-           ch.qos.logback/logback-classic {:mvn/version "1.4.14"}}
+           ch.qos.logback/logback-classic {:mvn/version "1.4.14"}
+
+           ;; Component Lifecycle:
+           mount/mount                    {:mvn/version "0.1.23"}
+
+           ;; Datomic
+           com.datomic/peer               {:mvn/version "1.0.6733"}
+
+           ;; Authorization:
+           cloudafrica/eacl               {;:local/root "/Users/petrus/code/eacl"
+                                           :git/url "git@github.com:cloudafrica/eacl.git"
+                                           :git/sha "5fe4e7533742a90583ba024825fa3bb508bc4e12"}}
  :paths   ["src" "resources"]
- :aliases {:dev {:extra-paths ["src-dev"] :extra-deps  {thheller/shadow-cljs {:mvn/version "2.26.2"}}}
+ :aliases {:dev  {:extra-paths ["src-dev"] :extra-deps {thheller/shadow-cljs {:mvn/version "2.26.2"}}}
            :prod {:extra-paths ["src-prod"]}
-           :build ; use `clj -X:prod:build build-client`, NOT -T!
+           :build                                           ; use `clj -X:prod:build build-client`, NOT -T!
            {:extra-paths ["src-build"]
             :ns-default  build
             :extra-deps  {thheller/shadow-cljs          {:mvn/version "2.26.2"}

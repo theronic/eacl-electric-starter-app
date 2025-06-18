@@ -1,4 +1,38 @@
-# Electric v3 Starter App
+# EACL: Electric Clojure v3 Starter App
+
+This template shows how to use [EACL](https://github.com/cloudafrica/eacl) from Electric Clojure v3 using the [Electric v3 Starter App](https://gitlab.com/hyperfiddle/electric3-starter-app) with cursor-based pagination against large result sets.
+
+Note that some of the pagination buttons (like "Last Page") are not impl.
+
+Cursor-based pagination means you can't show page numbers because you don't know the size of the (potentially large) result set, and traversing to the final page traverses the whole index.
+
+Nevertheless, the total server count uses `count-resources` which does this, which is why it's slow for `(->user "super-user")`, which has access to all servers.
+
+# Quickstart
+
+- Start a REPL and run `(dev/-main)`
+
+## Seed Datomic with EACL Fixtures
+
+Run in REPL:
+
+```
+(require '[electric-starter-app.data.config :as data.config :refer [conn]])
+(require '[electric-starter-app.data.seed :as seed])
+(seed/install-schema+fixtures! conn)
+```
+(This will take a few minutes.)
+
+- Open https://localhost:8088/
+
+You'll see 5 panes:
+- Paginated list of users (slow because Datomic query of all ~6k users)
+- User Accounts
+- User Servers: cursor-paginated list of servers user can :view
+- Account Servers: cursor-paginated servers that have an :account Relationship to the selected account 
+- Selected Server with a list of Subjects who can :view that server
+
+Clicking on any item will select it.
 
 ## Links
 

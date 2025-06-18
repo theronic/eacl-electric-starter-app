@@ -10,10 +10,14 @@
    #?(:clj [ring.middleware.content-type :refer [wrap-content-type]])
    #?(:clj [hyperfiddle.electric-ring-adapter3 :as electric-ring])
 
+   #?(:clj [mount.core :as mount])
+   #?(:clj [electric-starter-app.data.config :as data.config])
+   #?(:clj [electric-starter-app.eacl :as eacl])
+
    #?(:clj clojure.edn)
    #?(:clj clojure.java.io)
-   #?(:clj [clojure.tools.logging :as log])
-   ))
+   #?(:clj [clojure.tools.logging :as log])))
+
 
 (defmacro comptime-resource [filename] (some-> filename clojure.java.io/resource slurp clojure.edn/read-string))
 
@@ -35,6 +39,10 @@
               :manifest-path "public/electric_starter_app/js/manifest.edn"})]
        (log/info (pr-str config))
        (assert (string? (:hyperfiddle/electric-user-version config)))
+
+       (log/info "Starting Mount components...")
+       (mount/start #'data.config/conn #'eacl/acl)
+
        (ring/run-jetty
          (-> (fn [ring-request] (-> (ring-response/not-found "Page not found") (ring-response/content-type "text/plain")))
            (wrap-prod-index-page config) ; defined below

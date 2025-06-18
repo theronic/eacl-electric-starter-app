@@ -6,18 +6,26 @@
    #?(:clj [shadow.cljs.devtools.server :as shadow-cljs-compiler-server])
    #?(:clj [clojure.tools.logging :as log])
 
+   #?(:clj [mount.core :as mount])
+   #?(:clj [electric-starter-app.data.config :as data.config])
+   #?(:clj [electric-starter-app.eacl :as eacl])
+
    #?(:clj [ring.adapter.jetty :as ring])
    #?(:clj [ring.util.response :as ring-response])
    #?(:clj [ring.middleware.params :refer [wrap-params]])
    #?(:clj [ring.middleware.resource :refer [wrap-resource]])
    #?(:clj [ring.middleware.content-type :refer [wrap-content-type]])
-   #?(:clj [hyperfiddle.electric-ring-adapter3 :as electric-ring])
-   ))
+   #?(:clj [hyperfiddle.electric-ring-adapter3 :as electric-ring])))
+
 
 (comment (-main)) ; repl entrypoint
 
 #?(:clj ; server entrypoint
    (defn -main [& args]
+
+     (log/info "Starting Mount components...")
+     (mount/start #'data.config/conn #'eacl/acl)
+
      (log/info "Starting Electric compiler and server...")
 
      (shadow-cljs-compiler-server/start!)
@@ -33,7 +41,7 @@
                      (electric-ring/wrap-electric-websocket ; 2. install Electric server.
                        (fn [ring-request] (electric-starter-app.main/electric-boot ring-request))) ; boot server-side Electric process
                      (wrap-params)) ; 1. boilerplate – parse request URL parameters.
-                   {:host "localhost", :port 8080, :join? false
+                   {:host "localhost", :port 8088, :join? false
                     :configurator (fn [server] ; tune jetty
                                     (org.eclipse.jetty.websocket.server.config.JettyWebSocketServletContainerInitializer/configure
                                       (.getHandler server)
@@ -42,7 +50,7 @@
                                           (.setIdleTimeout wsContainer (java.time.Duration/ofSeconds 60))
                                           (.setMaxBinaryMessageSize wsContainer (* 100 1024 1024)) ; typical compressed message size is of a few KBs. Set to 100M for demo.
                                           (.setMaxTextMessageSize wsContainer (* 100 1024 1024))))))}))  ; 100M - for demo.
-     (log/info "👉 http://localhost:8080")))
+     (log/info "👉 http://localhost:8088")))
 
 (declare browser-process)
 #?(:cljs ; client entrypoint
@@ -59,5 +67,5 @@
 
 (comment
   (shadow-cljs-compiler-server/stop!)
-  (.stop server) ; stop jetty server
-  )
+  (.stop server)) ; stop jetty server
+
