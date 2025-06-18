@@ -14,7 +14,7 @@
           (log/debug try-lookup-resources qry)
 
           (try
-            (let [{:as result
+            (let [{:as   result
                    :keys [data cursor]} (eacl/lookup-resources acl qry)]
               ;(log/debug 'try-lookup-resources 'results (count data))
               result)
@@ -70,12 +70,12 @@
   (e/client
     (let [selected-server (e/watch !server)
 
-          !cursors     (atom (list))                        ; todo initial value.
-          cursors      (e/watch !cursors)
-          cursor       (peek cursors)
-          limit        50]
+          !cursors        (atom (list))                     ; todo initial value.
+          cursors         (e/watch !cursors)
+          cursor          (peek cursors)
+          limit           50]
       (e/server
-        (let [account           (if account-id (authz/->account account-id))
+        (let [account        (if account-id (authz/->account account-id))
 
               {:as         result
                error       :error
@@ -89,17 +89,17 @@
                                     {:data   []
                                      :error  "missing account-id"
                                      :cursor nil})
-              hydrated (d/pull-many db '[:db/id
-                                         :entity/id
-                                         :server/name]
-                                    (for [result paginated]
-                                      [:entity/id (:id result)]))
+              hydrated       (d/pull-many db '[:db/id
+                                               :eacl/id
+                                               :server/name]
+                                          (for [result paginated]
+                                            [:eacl/id (:id result)]))
 
-              diffed-servers    (e/diff-by :id hydrated)
-              total-count       (if account (e/Offload #(eacl/count-resources acl {:subject       account
-                                                                                   :permission    :view
-                                                                                   :resource/type :server}))
-                                            0)]
+              diffed-servers (e/diff-by :id hydrated)
+              total-count    (if account (e/Offload #(eacl/count-resources acl {:subject       account
+                                                                                :permission    :view
+                                                                                :resource/type :server}))
+                                         0)]
           (e/client
             (dom/h1 (dom/text total-count " Account Servers"))
 
@@ -107,7 +107,7 @@
 
             (dom/ul
               (e/for [server diffed-servers]
-                (let [obj-id (:entity/id server)]
+                (let [obj-id (:eacl/id server)]
                   (dom/li
                     (dom/props {:style {:background-color (if (= selected-server obj-id) "yellow" "inherit")}})
                     (dom/On "click" (fn [_e] (reset! !server obj-id)) nil)
@@ -117,17 +117,17 @@
   (e/client
     (let [selected-account (e/watch !account)
 
-          !cursors     (atom (list))                        ; todo initial value.
-          cursors      (e/watch !cursors)
-          cursor       (peek cursors)
+          !cursors         (atom (list))                    ; todo initial value.
+          cursors          (e/watch !cursors)
+          cursor           (peek cursors)
 
           ;!page-number (atom 1)
           ;page-number  (e/watch !page-number)
 
           ;offset       (* (dec page-number) page-size)
-          limit        50]
+          limit            50]
       (e/server
-        (let [user           (if user-id (authz/->user user-id))
+        (let [user        (if user-id (authz/->user user-id))
 
               {:as         result
                error       :error
@@ -141,16 +141,16 @@
                                     {:data   []
                                      :error  "missing user-id"
                                      :cursor nil})
-              hydrated (d/pull-many db '[*]
-                                    (for [result paginated]
-                                      [:entity/id (:id result)]))
+              hydrated    (d/pull-many db '[*]
+                                       (for [result paginated]
+                                         [:eacl/id (:id result)]))
 
-              total-count    (if user (e/Offload #(eacl/count-resources acl {:subject       user
-                                                                             :permission    :view
-                                                                             :resource/type :account}))
-                                      0)
+              total-count (if user (e/Offload #(eacl/count-resources acl {:subject       user
+                                                                          :permission    :view
+                                                                          :resource/type :account}))
+                                   0)
 
-              diffed (e/diff-by :id hydrated)]
+              diffed      (e/diff-by :id hydrated)]
           (e/client
             ;(dom/text "Servers todo fix")
             (dom/h1 (dom/text total-count " User Accounts"))
@@ -161,7 +161,7 @@
 
             (dom/ul
               (e/for [account diffed]
-                (let [account-id (:entity/id account)]
+                (let [account-id (:eacl/id account)]
                   (dom/li
                     (dom/props {:style {:background-color (if (= selected-account account-id) "yellow" "inherit")}})
                     (dom/On "click" (fn [_e] (reset! !account account-id)) nil)
@@ -171,15 +171,15 @@
   (e/client
     (let [current-server (e/watch !server)
 
-          !cursors     (atom (list))                        ; todo initial value.
-          cursors      (e/watch !cursors)
-          cursor       (peek cursors)
+          !cursors       (atom (list))                      ; todo initial value.
+          cursors        (e/watch !cursors)
+          cursor         (peek cursors)
 
           ;!page-number (atom 1)
           ;page-number  (e/watch !page-number)
 
           ;offset       (* (dec page-number) page-size)
-          limit        50]
+          limit          50]
       (e/server
         (let [user           (if user-id (authz/->user user-id))
 
@@ -195,11 +195,11 @@
                                     {:data   []
                                      :error  "missing user-id"
                                      :cursor nil})
-              hydrated (d/pull-many db '[:db/id
-                                         :entity/id
-                                         :server/name]
-                                    (for [result paginated]
-                                      [:entity/id (:id result)]))
+              hydrated       (d/pull-many db '[:db/id
+                                               :eacl/id
+                                               :server/name]
+                                          (for [result paginated]
+                                            [:eacl/id (:id result)]))
 
               total-count    (if user (e/Offload #(eacl/count-resources acl {:subject       user
                                                                              :permission    :view
@@ -217,7 +217,7 @@
 
             (dom/ul
               (e/for [server diffed-servers]
-                (let [obj-id (:entity/id server)]
+                (let [obj-id (:eacl/id server)]
                   (dom/li
                     (dom/props {:style {:background-color (if (= current-server obj-id) "yellow" "inherit")}})
                     (dom/On "click" (fn [_e] (reset! !server obj-id)) nil)
@@ -227,15 +227,15 @@
    (defn qry-user-ids [db]
      (d/q '[:find [?obj-id ...]
             :where
-            [?user :resource/type :user]
-            [?user :entity/id ?obj-id]]
+            [?user :eacl/type :user]
+            [?user :eacl/id ?obj-id]]
           db)))
 
 #?(:clj (defn spice-object->entity [db {:as obj :keys [type id]}]
-          (if-let [eid (d/entid db [:entity/id id])]
+          (if-let [eid (d/entid db [:eacl/id id])]
             (d/entity db eid)
             (do
-              (log/warn "Missing :entity/id" id)
+              (log/warn "Missing :eacl/id" id)
               nil))))
 
 (comment
@@ -248,17 +248,17 @@
        (->> (eacl/read-relationships acl {:subject/type  :user
                                           :resource/type :account})
             (map (comp :id :subject))
-            (map (fn [obj-id] [:entity/id obj-id]))
+            (map (fn [obj-id] [:eacl/id obj-id]))
             (d/pull-many db '[*]))
-            ;(map (partial spice-object->entity db))
-            ;(remove nil?)                                   ; should not need this
-            ;(map d/touch))
+       ;(map (partial spice-object->entity db))
+       ;(remove nil?)                                   ; should not need this
+       ;(map d/touch))
        (catch Exception ex
          (log/error "Exception " ex)
          []))))
 
 (comment
-  (d/entid (d/db conn) [:entity/id "user-1"])
+  (d/entid (d/db conn) [:eacl/id "user-1"])
   (count (take 30 (lookup-users-with-accounts (d/db conn) acl))))
 
 #?(:clj
@@ -270,7 +270,7 @@
             (:data)
             (remove nil?)
             (map (partial spice-object->entity db))
-            (remove nil?) ; why is this an issue?
+            (remove nil?)                                   ; why is this an issue?
             (map d/touch))
        (catch Exception ex
          (log/error 'lookup-users-for-account-ex ex)
@@ -282,7 +282,7 @@
                                       :permission    :view
                                       :resource/type :account})
           (:data)
-          (remove nil?) ; should never happen
+          (remove nil?)                                     ; should never happen
           (map (partial spice-object->entity db))
           (remove nil?)
           (map d/touch))))
@@ -291,8 +291,8 @@
    (defn qry-accounts [db]
      (d/q '[:find [(pull ?account [*]) ...]
             :where
-            [?account :resource/type :account]
-            [?account :entity/id]]
+            [?account :eacl/type :account]
+            [?account :eacl/id]]
           db)))
 
 (e/defn PaginatedList [{:keys [total page-size limit offset]} coll diff-fn RenderItem]
@@ -305,7 +305,7 @@
       (dom/ul
         (e/server
           (e/for [item diffed]
-            (let [obj-id (:entity/id item)]
+            (let [obj-id (:eacl/id item)]
               (e/client
                 (dom/li
                   ;(dom/On "click" (fn [_e] (on-change-account obj-id)) nil)
@@ -323,7 +323,7 @@
           limit        page-size]
       (e/server
         (let [accounts        (e/Offload #(qry-accounts db))
-              sorted          (sort-by :db/id accounts) ; (reverse (sort-by :db/id accounts)) ; temp reverse.
+              sorted          (sort-by :db/id accounts)     ; (reverse (sort-by :db/id accounts)) ; temp reverse.
               paginated       (->> sorted (drop offset) (take limit))
               diffed-accounts (e/diff-by :db/id paginated)]
           (e/client
@@ -333,7 +333,7 @@
               ;(e/server (do (debug-data diffed-accounts)))
               ; if you change this to e/server, Electric crashes on 3rd page
               (e/for [account diffed-accounts]
-                (let [obj-id (:entity/id account)]
+                (let [obj-id (:eacl/id account)]
                   (e/client
                     (dom/li
                       (dom/On "click" (fn [_e] (on-change-account obj-id)) nil)
@@ -349,7 +349,7 @@
         (dom/ul
           (e/server
             (e/for [account diffed-accounts]
-              (let [obj-id (:entity/id account)]
+              (let [obj-id (:eacl/id account)]
                 (e/client
                   (dom/li
                     (dom/On "click" (fn [_e] (on-change-account obj-id)) nil)
@@ -357,22 +357,22 @@
                     (dom/text "Account " (e/server (pr-str account)))))))))))))
 
 (comment
-  (let [limit 50
-        offset 150
-        db (d/db conn)
-        users (lookup-users-with-accounts db acl)          ; (qry-user-ids db) ; or use lookup-users-with-accounts
-        sorted      (->> users (sort-by :db/id))
-        paginated   (->> sorted (drop offset) (take limit))]
-        ;diffed-page (e/diff-by :db/id paginated)]
-    (count paginated))) ;(e/as-vec diffed-page))))
+  (let [limit     50
+        offset    150
+        db        (d/db conn)
+        users     (lookup-users-with-accounts db acl)       ; (qry-user-ids db) ; or use lookup-users-with-accounts
+        sorted    (->> users (sort-by :db/id))
+        paginated (->> sorted (drop offset) (take limit))]
+    ;diffed-page (e/diff-by :db/id paginated)]
+    (count paginated)))                                     ;(e/as-vec diffed-page))))
 
 (e/defn UserList [db acl !user]
   (e/client
     (let [selected-user (e/watch !user)
 
-          !page-number (atom 1)
-          page-number  (e/watch !page-number)
-          page-size    50]
+          !page-number  (atom 1)
+          page-number   (e/watch !page-number)
+          page-size     50]
       (e/server
         (let [offset      (* page-size (dec page-number))
               limit       page-size
@@ -380,9 +380,9 @@
               users       (lookup-users-with-accounts db acl) ;(e/Offload #(lookup-users-with-accounts db acl)) ; (qry-user-ids db) ; or use lookup-users-with-accounts
               sorted      (->> users (sort-by :db/id))
               paginated   (->> sorted (drop offset) (take limit))
-              diffed-page (e/diff-by :db/id paginated)] ; should be :db/id
+              diffed-page (e/diff-by :db/id paginated)]     ; should be :db/id
 
-              ;_           (prn 'diffed-page diffed-page)]
+          ;_           (prn 'diffed-page diffed-page)]
           (e/client
             (dom/h2 (dom/text (e/server (count sorted)) " Users"))
             (dom/p (dom/text "Click to change Authenticated User:"))
@@ -390,8 +390,8 @@
             (PaginationButtons !page-number)
 
             (dom/ul
-              (e/for [user diffed-page] ; if run in e/server, this e/for fails on 3rd page of pagination, regardless of page size.
-                (let [obj-id (:entity/id user)]
+              (e/for [user diffed-page]                     ; if run in e/server, this e/for fails on 3rd page of pagination, regardless of page size.
+                (let [obj-id (:eacl/id user)]
                   (e/client
                     (dom/li
                       (dom/props {:style {:background-color (if (= selected-user obj-id) "yellow" "inherit")}})
@@ -408,7 +408,7 @@
         (let [offset      (* page-size (dec page-number))
               limit       page-size
 
-              account-eid (d/entid db [:entity/id account-id]) ; to check for existence. EACL will throw if missing.
+              account-eid (d/entid db [:eacl/id account-id]) ; to check for existence. EACL will throw if missing.
               account     (authz/->account account-id)
 
               users       (if account-eid (e/Offload #(lookup-users-for-account db acl account)) [])
@@ -430,7 +430,7 @@
             (dom/ul
               (e/server
                 (e/for [user diffed-page]
-                  (let [obj-id (:entity/id user)]
+                  (let [obj-id (:eacl/id user)]
                     (e/client
                       (dom/li
                         (dom/On "click" (fn [_e] (on-change-user obj-id)) nil)
@@ -469,14 +469,14 @@
 #?(:clj (defn count-servers [db]
           (d/q '[:find (count ?server) .
                  :where
-                 [?server :resource/type :server]]
+                 [?server :eacl/type :server]]
                db)))
 
 (e/defn Main [ring-request]
   (e/server
     (let [db (e/watch g/!db)]
       (e/client
-        (let [!signed-in-user   (atom "user-1")             ; :entity/id in Datomic = Spice Object ID. :object/id
+        (let [!signed-in-user   (atom "user-1")             ; :eacl/id in Datomic = Spice Object ID
               signed-in-user-id (e/watch !signed-in-user)
               !account-id       (atom nil)
               account-id        (e/watch !account-id)
@@ -505,12 +505,12 @@
 
                 (dom/div
                   (dom/p (dom/text "Selected Server: " selected-server))
-                  (when true ; false
+                  (when true                                ; false
                     (UserServerList db acl signed-in-user-id !selected-server)))
 
                 (dom/div
                   (dom/p (dom/text "Selected Account: " account-id))
-                  (when true ; false
+                  (when true                                ; false
                     (AccountServerList db acl account-id !selected-server)))
 
                 (dom/div

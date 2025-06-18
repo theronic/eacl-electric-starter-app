@@ -99,93 +99,93 @@
    ;; Entity Fixtures & Relationships:
 
    ; Global Platform for Super Admins:
-   {:db/id         "platform"
-    :entity/id     "platform"
-    :db/ident      :test/platform
-    :resource/type :platform}
+   {:db/id     "platform"
+    :db/ident  :test/platform
+    :eacl/type :platform
+    :eacl/id   "platform"}
 
    ; Users:
-   {:db/id         "user-1"
-    :entity/id     "user-1"
-    :db/ident      :test/user1
-    :resource/type :user}
+   {:db/id     "user-1"
+    :db/ident  :test/user1
+    :eacl/type :user
+    :eacl/id   "user-1"}
 
    (Relationship (->user "user-1") :member (->team "team-1")) ; User 1 is on Team 1
    (Relationship (->user "user-1") :owner (->account "account-1"))
 
    ; Super User can do all the things:
-   {:db/id         "super-user"
-    :entity/id     "super-user"
-    :db/ident      :user/super-user
-    :resource/type :user}
+   {:db/id     "super-user"
+    :db/ident  :user/super-user
+    :eacl/type :user
+    :eacl/id   "super-user"}
 
    (Relationship (->user "super-user") :super_admin (->platform "platform"))
 
-   {:db/id         "user-2"
-    :entity/id     "user-2"
-    :db/ident      :test/user2
-    :resource/type :user}
+   {:db/id     "user-2"
+    :db/ident  :test/user2
+    :eacl/type :user
+    :eacl/id   "user-2"}
 
    (Relationship (->user "user-2") :owner (->account "account-2"))
 
    ; Accounts
-   {:db/id         "account-1"
-    :entity/id     "account-1"
-    :db/ident      :test/account1
-    :resource/type :account}
+   {:db/id     "account-1"
+    :db/ident  :test/account1
+    :eacl/type :account
+    :eacl/id   "account-1"}
 
    (Relationship (->platform "platform") :platform (->account "account-1"))
 
-   {:db/id         "account-2"
-    :entity/id     "account-2"
-    :db/ident      :test/account2
-    :resource/type :account}
+   {:db/id     "account-2"
+    :db/ident  :test/account2
+    :eacl/type :account
+    :eacl/id   "account-2"}
 
    (Relationship (->platform "platform") :platform (->account "account-2"))
 
    ; VPC
-   {:db/id         "vpc-1"
-    :entity/id     "vpc-1"
-    :db/ident      :test/vpc
-    :resource/type :vpc}
+   {:db/id     "vpc-1"
+    :db/ident  :test/vpc
+    :eacl/type :vpc
+    :eacl/id   "vpc-1"}
 
    (Relationship (->account "account-1") :account (->vpc "vpc-1"))
 
-   {:db/id         "vpc-2"
-    :entity/id     "vpc-2"
-    :db/ident      :test/vpc2
-    :resource/type :vpc}
+   {:db/id     "vpc-2"
+    :db/ident  :test/vpc2
+    :eacl/type :vpc
+    :eacl/id   "vpc-2"}
 
    (Relationship (->account "account-2") :account (->vpc "vpc-2"))
 
    ; Team
-   {:db/id         "team-1"
-    :entity/id     "team-1"
-    :resource/type :team
-    :db/ident      :test/team}
+   {:db/id     "team-1"
+    :db/ident  :test/team
+    :eacl/type :team
+    :eacl/id   "team-1"}
 
    ; Teams belongs to accounts
    (Relationship (->account "account-1") :account (->team "team-1"))
 
-   {:db/id         "team-2"
-    :entity/id     "team-2"
-    :db/ident      :test/team2
-    :resource/type :team}
+   {:db/id     "team-2"
+    :db/ident  :test/team2
+    :eacl/type :team
+    :eacl/id   "team-2"}
 
    (Relationship (->account "account-2") :account (->team "team-2"))
 
    ;; Servers:
-   {:db/id         "server-1"
-    :entity/id     "server-1"
-    :db/ident      :test/server1
-    :resource/type :server}
+   {:db/id     "server-1"
+    :db/ident  :test/server1
+    :eacl/type :server
+    :eacl/id   "server-1"}
 
    (Relationship (->account "account-1") :account (->server "server-1")) ; hmm let's check schema plz.
 
-   {:db/id         "server-2"
-    :entity/id     "server-2"
-    :db/ident      :test/server2
-    :resource/type :server}
+   {:db/id     "server-2"
+    :db/ident  :test/server2
+    :eacl/type :server
+    :eacl/id   "server-2"}
 
    (Relationship (->account "account-2") :account (->server "server-2"))])
 
@@ -206,10 +206,10 @@
         user-uuid->tempid (ids->tempid-map user-uuids)]
     (for [user-uuid user-uuids]
       (let [user-tempid (user-uuid->tempid user-uuid)]
-        [{:db/id         user-tempid
-          :resource/type :user
-          :entity/id     (str user-uuid)
-          :user/account  account-tempid}                    ; only to police permission checks.
+        [{:db/id        user-tempid
+          :eacl/type    :user
+          :eacl/id      (str user-uuid)
+          :user/account account-tempid}                     ; only to police permission checks.
          (impl/Relationship (->user user-tempid) :owner (->account account-tempid))]))))
 
 (defn make-account-server-txes [account-tempid n]
@@ -219,18 +219,18 @@
     (for [server-uuid server-uuids]
       (let [server-tempid (server-uuid->tempid server-uuid)]
         [{:db/id          server-tempid
-          :resource/type  :server
-          :server/account account-tempid                    ; only to police permission checks.
-          :entity/id      (str server-uuid)
-          :server/name    (str "Servers " server-uuid)}
+          :server/account account-tempid
+          :server/name    (str "Servers " server-uuid)      ; only to police permission checks.
+          :eacl/type      :server
+          :eacl/id        (str server-uuid)}
          (impl/Relationship (->account account-tempid) :account (->server server-tempid))]))))
 
 (defn make-account-txes [{:keys [num-users-per-account num-servers-per-account]} account-uuid]
   (let [account-tempid (d/tempid :db.part/user)
-        account-txes     [{:db/id         account-tempid
-                           :resource/type :account
-                           :entity/id     (str account-uuid)}
-                          (impl/Relationship (->platform [:entity/id "platform"]) :platform (->account account-tempid))]
+        account-txes   [{:db/id     account-tempid
+                         :eacl/type :account
+                         :eacl/id   (str account-uuid)}
+                        (impl/Relationship (->platform [:eacl/id "platform"]) :platform (->account account-tempid))]
         user-txes      (make-account-user-txes account-tempid num-users-per-account)
         server-txes    (make-account-server-txes account-tempid num-servers-per-account)]
     (concat account-txes (flatten user-txes) (flatten server-txes))))
@@ -241,10 +241,10 @@
   (d/q '[:find [?user-id ...]
          :in $ ?server-id
          :where
-         [?server :entity/id ?server-id]
+         [?server :eacl/id ?server-id]
          [?server :server/account ?account]
          [?user :user/account ?account]
-         [?user :entity/id ?user-id]]
+         [?user :eacl/id ?user-id]]
        db server-id))
 
 ;(defn tx-seeds
@@ -310,11 +310,12 @@
               :db/valueType   :db.type/ref
               :db/index       true}])
 
-  (map deref (tx-commit-seeds-doseq! conn {:num-accounts            500 ; more than 750 fries in-mem Datomic
-                                           :min-users-per-account   10
-                                           :max-users-per-account   15
-                                           :min-servers-per-account 500
-                                           :max-servers-per-account 1000}))
+  (doall
+    (map deref (tx-commit-seeds-doseq! conn {:num-accounts            500 ; more than 750 fries in-mem Datomic
+                                             :min-users-per-account   10
+                                             :max-users-per-account   15
+                                             :min-servers-per-account 500
+                                             :max-servers-per-account 1000})))
   ; don't return results
   nil)
 

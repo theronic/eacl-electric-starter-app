@@ -10,13 +10,10 @@ Nevertheless, the total server count uses `count-resources` which does this, whi
 
 # Quickstart
 
-- Start a REPL and run `(dev/-main)`
-
-## Seed Datomic with EACL Fixtures
-
-Run in REPL:
+Start a REPL and run in this order:
 
 ```
+(dev/-main) ; this starts the `conn` Mount component
 (require '[electric-starter-app.data.config :as data.config :refer [conn]])
 (require '[electric-starter-app.data.seed :as seed])
 (seed/install-schema+fixtures! conn)

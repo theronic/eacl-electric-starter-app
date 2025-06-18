@@ -25,5 +25,5 @@
   datomic-uri
   (d/q '[:find (count ?server) .
          :where
-         [?server :resource/type :server]]
+         [?server :eacl/type :server]]
        (d/db conn)))

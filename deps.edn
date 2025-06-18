@@ -13,7 +13,7 @@
            ;; Authorization:
            cloudafrica/eacl               {;:local/root "/Users/petrus/code/eacl"
                                            :git/url "git@github.com:cloudafrica/eacl.git"
-                                           :git/sha "5fe4e7533742a90583ba024825fa3bb508bc4e12"}}
+                                           :git/sha "a1671e4c8d6abb9925f94a7a6dfe9dffc5173ed5"}}
  :paths   ["src" "resources"]
  :aliases {:dev  {:extra-paths ["src-dev"] :extra-deps {thheller/shadow-cljs {:mvn/version "2.26.2"}}}
            :prod {:extra-paths ["src-prod"]}
