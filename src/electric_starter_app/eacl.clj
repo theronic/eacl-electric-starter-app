@@ -5,7 +5,8 @@
             [mount.core :as mount :refer [defstate]]))
 
 (defstate acl ; named `acl` to distinguish from generic `client`, `e/client` or `eacl`.
-  :start (eacl.datomic.core/make-client conn)
+  :start (eacl.datomic.core/make-client conn {:entity->object-id (fn [ent] (:eacl/id ent))
+                                              :object-id->ident  (fn [obj-id] [:eacl/id obj-id])})
   :stop nil)
 
 ; Helpers are specific to cloud hosting
